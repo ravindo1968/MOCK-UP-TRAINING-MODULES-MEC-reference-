@@ -1,0 +1,1978 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M.E.C — Maritime English Course | Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #0B1D35;
+  --navy-mid: #122847;
+  --navy-light: #1a3a60;
+  --gold: #C9A84C;
+  --gold-light: #e8c76a;
+  --gold-dim: #8a6f2f;
+  --white: #f5f0e8;
+  --cream: #faf7f0;
+  --text: #d4cfc5;
+  --text-dim: #8a8278;
+  --glass: rgba(11,29,53,0.7);
+  --glass-border: rgba(201,168,76,0.2);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--navy);
+  color: var(--white);
+  overflow-x: hidden;
+}
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--navy); }
+::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 3px; }
+
+/* ===== OCEAN BACKGROUND ===== */
+.ocean-bg {
+  position: fixed; top:0; left:0; width:100%; height:100%;
+  z-index: -2; overflow: hidden; pointer-events: none;
+}
+.wave {
+  position: absolute; width: 200%; height: 200%;
+  background: radial-gradient(ellipse at 20% 80%, rgba(18,40,71,0.8) 0%, transparent 60%),
+              radial-gradient(ellipse at 80% 20%, rgba(201,168,76,0.05) 0%, transparent 50%);
+}
+.stars {
+  position: absolute; top:0; left:0; width:100%; height:60%;
+  background-image:
+    radial-gradient(1px 1px at 10% 15%, rgba(201,168,76,0.6) 0%, transparent 100%),
+    radial-gradient(1px 1px at 30% 8%, rgba(255,255,255,0.3) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 55% 20%, rgba(201,168,76,0.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 75% 12%, rgba(255,255,255,0.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 90% 5%, rgba(201,168,76,0.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 20% 35%, rgba(255,255,255,0.2) 0%, transparent 100%),
+    radial-gradient(1px 1px at 65% 30%, rgba(255,255,255,0.3) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 45% 45%, rgba(201,168,76,0.3) 0%, transparent 100%);
+}
+.grid-overlay {
+  position: fixed; top:0; left:0; width:100%; height:100%;
+  z-index: -1;
+  background-image: 
+    linear-gradient(rgba(201,168,76,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(201,168,76,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* ===== NAVBAR ===== */
+#navbar {
+  position: fixed; top:0; left:0; right:0; z-index:1000;
+  background: rgba(11,29,53,0.95);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--glass-border);
+  transition: all 0.3s ease;
+}
+.nav-inner {
+  max-width: 1300px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px; height: 64px;
+}
+.nav-logo {
+  display: flex; align-items: center; gap: 10px; text-decoration: none;
+}
+.nav-logo-icon {
+  width: 38px; height: 38px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+}
+.nav-logo-text {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.3rem; font-weight: 700;
+  color: var(--gold);
+  letter-spacing: 0.5px;
+}
+.nav-logo-sub {
+  font-size: 0.6rem; color: var(--text-dim);
+  letter-spacing: 1px; text-transform: uppercase;
+  display: block; line-height: 1;
+}
+nav ul {
+  display: flex; list-style: none; gap: 4px;
+}
+nav ul li a {
+  color: var(--text); text-decoration: none;
+  font-size: 0.82rem; font-weight: 500;
+  padding: 8px 12px; border-radius: 6px;
+  letter-spacing: 0.3px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+nav ul li a:hover {
+  color: var(--gold); background: rgba(201,168,76,0.1);
+}
+nav ul li a.active {
+  color: var(--gold); background: rgba(201,168,76,0.15);
+}
+.hamburger {
+  display: none; flex-direction: column; gap: 5px;
+  cursor: pointer; padding: 6px;
+}
+.hamburger span {
+  width: 24px; height: 2px; background: var(--gold);
+  border-radius: 2px; transition: all 0.3s ease;
+}
+.mobile-menu {
+  display: none;
+  position: fixed; top:64px; left:0; right:0;
+  background: rgba(11,29,53,0.98);
+  border-bottom: 1px solid var(--glass-border);
+  z-index: 999; padding: 16px 24px 24px;
+}
+.mobile-menu.open { display: block; }
+.mobile-menu ul { list-style: none; }
+.mobile-menu ul li { border-bottom: 1px solid rgba(201,168,76,0.1); }
+.mobile-menu ul li a {
+  display: block; color: var(--text); text-decoration: none;
+  font-size: 0.95rem; font-weight: 500; padding: 14px 0;
+  transition: color 0.2s;
+}
+.mobile-menu ul li a:hover { color: var(--gold); }
+
+/* ===== SECTION BASE ===== */
+section { position: relative; }
+.section-container {
+  max-width: 1200px; margin: 0 auto; padding: 0 24px;
+}
+.section-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(201,168,76,0.1);
+  border: 1px solid rgba(201,168,76,0.3);
+  border-radius: 20px; padding: 6px 16px;
+  font-size: 0.75rem; font-weight: 600;
+  color: var(--gold); text-transform: uppercase;
+  letter-spacing: 1.5px; margin-bottom: 20px;
+}
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700; line-height: 1.15;
+  margin-bottom: 16px;
+}
+.section-title span { color: var(--gold); }
+.section-sub {
+  font-size: 1rem; color: var(--text-dim);
+  max-width: 580px; line-height: 1.7;
+}
+
+/* ===== HERO ===== */
+#beranda {
+  min-height: 100vh;
+  display: flex; align-items: center;
+  padding: 100px 0 60px;
+  position: relative; overflow: hidden;
+}
+.hero-ship {
+  position: absolute; right: -40px; bottom: 0;
+  width: 55%; max-width: 700px; opacity: 0.08;
+  pointer-events: none;
+}
+.hero-content { position: relative; z-index: 2; }
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 10px;
+  color: var(--gold); font-size: 0.8rem; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase; margin-bottom: 24px;
+}
+.hero-eyebrow::before, .hero-eyebrow::after {
+  content: ''; width: 30px; height: 1px; background: var(--gold);
+}
+.hero-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2.8rem, 6vw, 5rem);
+  font-weight: 900; line-height: 1.08;
+  margin-bottom: 24px;
+}
+.hero-title .line1 { display: block; color: var(--white); }
+.hero-title .line2 { display: block; color: var(--gold); font-style: italic; }
+.hero-title .line3 { display: block; color: var(--text-dim); font-size: 0.6em; }
+.hero-sub {
+  font-size: 1.1rem; color: var(--text);
+  max-width: 560px; line-height: 1.75;
+  margin-bottom: 40px;
+}
+.hero-sub em {
+  color: var(--gold); font-style: normal; font-weight: 600;
+}
+.hero-actions { display: flex; gap: 16px; flex-wrap: wrap; }
+.btn-primary {
+  background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+  color: var(--navy); font-weight: 700;
+  padding: 14px 32px; border-radius: 8px;
+  border: none; cursor: pointer;
+  font-size: 0.95rem; font-family: 'DM Sans', sans-serif;
+  text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(201,168,76,0.3);
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(201,168,76,0.45);
+}
+.btn-outline {
+  background: transparent;
+  color: var(--gold); font-weight: 600;
+  padding: 14px 32px; border-radius: 8px;
+  border: 1.5px solid rgba(201,168,76,0.5); cursor: pointer;
+  font-size: 0.95rem; font-family: 'DM Sans', sans-serif;
+  text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+  transition: all 0.3s ease;
+}
+.btn-outline:hover {
+  background: rgba(201,168,76,0.1); border-color: var(--gold);
+  transform: translateY(-2px);
+}
+.hero-stats {
+  display: flex; gap: 40px; margin-top: 60px;
+  flex-wrap: wrap;
+}
+.stat-item { border-left: 2px solid var(--gold); padding-left: 16px; }
+.stat-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem; font-weight: 700; color: var(--gold);
+  line-height: 1;
+}
+.stat-label {
+  font-size: 0.75rem; color: var(--text-dim);
+  text-transform: uppercase; letter-spacing: 1px; margin-top: 4px;
+}
+
+/* ===== SHIP ILLUSTRATION (SVG) ===== */
+.hero-svg-wrap {
+  position: absolute; right: 0; top: 50%; transform: translateY(-50%);
+  width: 50%; max-width: 620px; pointer-events: none; opacity: 0.12;
+}
+
+/* ===== ROADMAP ===== */
+#roadmap { padding: 100px 0; }
+.roadmap-header { text-align: center; margin-bottom: 70px; }
+.roadmap-header .section-sub { margin: 0 auto; }
+.timeline {
+  position: relative; display: flex; gap: 0;
+  justify-content: center; align-items: flex-start;
+}
+.timeline::before {
+  content: ''; position: absolute; top: 56px; left: 15%; right: 15%;
+  height: 2px;
+  background: linear-gradient(90deg, var(--gold-dim), var(--gold), var(--gold-dim));
+}
+.phase {
+  flex: 1; max-width: 320px;
+  display: flex; flex-direction: column; align-items: center;
+  text-align: center; padding: 0 20px; position: relative;
+  cursor: pointer;
+}
+.phase-icon {
+  width: 110px; height: 110px;
+  background: linear-gradient(135deg, var(--navy-light), var(--navy-mid));
+  border: 2px solid var(--gold);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 2.5rem; position: relative; z-index: 2;
+  transition: all 0.4s ease;
+  box-shadow: 0 0 0 0 rgba(201,168,76,0.3);
+}
+.phase:hover .phase-icon {
+  transform: scale(1.1);
+  box-shadow: 0 0 0 12px rgba(201,168,76,0.1), 0 0 30px rgba(201,168,76,0.3);
+  background: linear-gradient(135deg, rgba(201,168,76,0.2), var(--navy-light));
+}
+.phase-num {
+  position: absolute; top: -8px; right: -8px;
+  width: 30px; height: 30px; background: var(--gold);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 0.75rem; font-weight: 700; color: var(--navy);
+}
+.phase-body { padding-top: 28px; }
+.phase-tag {
+  font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 2px; color: var(--gold); margin-bottom: 8px;
+}
+.phase-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.4rem; font-weight: 700; margin-bottom: 8px;
+}
+.phase-months {
+  font-size: 0.78rem; color: var(--text-dim);
+  background: rgba(201,168,76,0.1); border-radius: 20px;
+  padding: 4px 12px; display: inline-block; margin-bottom: 14px;
+}
+.phase-desc { font-size: 0.88rem; color: var(--text-dim); line-height: 1.65; }
+.phase-more {
+  margin-top: 16px; font-size: 0.8rem; color: var(--gold);
+  font-weight: 600; letter-spacing: 0.5px;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+
+/* ===== PAKET PELATIHAN ===== */
+#paket-pelatihan { padding: 100px 0; }
+.paket-header { text-align: center; margin-bottom: 60px; }
+.cards-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+}
+.pkg-card {
+  background: linear-gradient(135deg, var(--navy-mid), var(--navy-light));
+  border: 1px solid var(--glass-border);
+  border-radius: 16px; padding: 32px 28px;
+  cursor: pointer; position: relative; overflow: hidden;
+  transition: all 0.35s ease;
+}
+.pkg-card::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(201,168,76,0.08), transparent);
+  opacity: 0; transition: opacity 0.35s;
+}
+.pkg-card:hover { transform: translateY(-8px); border-color: rgba(201,168,76,0.5); }
+.pkg-card:hover::before { opacity: 1; }
+.pkg-card.featured {
+  border-color: var(--gold);
+  background: linear-gradient(135deg, rgba(201,168,76,0.12), var(--navy-mid));
+}
+.pkg-badge {
+  position: absolute; top: 16px; right: 16px;
+  background: var(--gold); color: var(--navy);
+  font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1px; padding: 4px 10px; border-radius: 20px;
+}
+.pkg-icon { font-size: 2.5rem; margin-bottom: 20px; }
+.pkg-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.3rem; font-weight: 700; margin-bottom: 6px;
+}
+.pkg-tagline { font-size: 0.82rem; color: var(--text-dim); margin-bottom: 20px; }
+.pkg-price {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.8rem; font-weight: 700; color: var(--gold); margin-bottom: 4px;
+}
+.pkg-price-note { font-size: 0.75rem; color: var(--text-dim); margin-bottom: 20px; }
+.pkg-duration {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 0.82rem; color: var(--text-dim); margin-bottom: 20px;
+}
+.pkg-modules { list-style: none; margin-bottom: 24px; }
+.pkg-modules li {
+  font-size: 0.82rem; color: var(--text-dim); padding: 6px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  display: flex; align-items: flex-start; gap: 8px;
+}
+.pkg-modules li::before { content: '→'; color: var(--gold); flex-shrink: 0; margin-top: 1px; }
+.pkg-cta {
+  width: 100%; padding: 12px; border-radius: 8px; cursor: pointer;
+  font-family: 'DM Sans', sans-serif; font-size: 0.88rem; font-weight: 600;
+  border: 1.5px solid var(--gold); background: transparent; color: var(--gold);
+  transition: all 0.25s;
+}
+.pkg-card:hover .pkg-cta, .pkg-card.featured .pkg-cta {
+  background: var(--gold); color: var(--navy);
+}
+
+/* ===== RPS TABLE ===== */
+#rps { padding: 100px 0; }
+.rps-header { text-align: center; margin-bottom: 50px; }
+.table-wrap { overflow-x: auto; border-radius: 16px; border: 1px solid var(--glass-border); }
+table {
+  width: 100%; border-collapse: collapse;
+  background: linear-gradient(135deg, var(--navy-mid), var(--navy-light));
+}
+thead tr { background: rgba(201,168,76,0.1); border-bottom: 2px solid var(--glass-border); }
+thead th {
+  padding: 16px 18px; text-align: left;
+  font-size: 0.75rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1.5px; color: var(--gold);
+  white-space: nowrap;
+}
+tbody tr {
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  cursor: pointer; transition: background 0.2s;
+}
+tbody tr:hover { background: rgba(201,168,76,0.07); }
+tbody td { padding: 14px 18px; font-size: 0.85rem; color: var(--text); }
+.td-week {
+  font-weight: 700; color: var(--gold);
+  font-size: 0.9rem; white-space: nowrap;
+}
+.td-method {
+  background: rgba(201,168,76,0.12); color: var(--gold);
+  border-radius: 20px; padding: 4px 10px; font-size: 0.72rem;
+  font-weight: 600; white-space: nowrap; display: inline-block;
+}
+.td-duration {
+  color: var(--text-dim); font-size: 0.8rem; white-space: nowrap;
+}
+
+/* ===== RLS TECH ===== */
+#teknologi-rls { padding: 100px 0; background: linear-gradient(180deg, transparent, rgba(201,168,76,0.03), transparent); }
+.rls-header { text-align: center; margin-bottom: 60px; }
+.rls-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 24px;
+}
+.rls-card {
+  background: var(--navy-mid); border: 1px solid var(--glass-border);
+  border-radius: 16px; padding: 36px 28px; text-align: center;
+  cursor: pointer; transition: all 0.35s ease; position: relative; overflow: hidden;
+}
+.rls-card::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+  height: 3px; background: linear-gradient(90deg, var(--gold-dim), var(--gold));
+  transform: scaleX(0); transition: transform 0.35s;
+}
+.rls-card:hover::after { transform: scaleX(1); }
+.rls-card:hover { transform: translateY(-6px); border-color: rgba(201,168,76,0.4); }
+.rls-icon { font-size: 3rem; margin-bottom: 20px; }
+.rls-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem; font-weight: 700; margin-bottom: 10px;
+}
+.rls-desc { font-size: 0.83rem; color: var(--text-dim); line-height: 1.65; }
+.rls-tag {
+  margin-top: 16px; font-size: 0.7rem; color: var(--gold);
+  text-transform: uppercase; letter-spacing: 1px; font-weight: 700;
+}
+
+/* ===== REFERENSI GLOBAL ===== */
+#referensi-global { padding: 100px 0; }
+.ref-header { text-align: center; margin-bottom: 60px; }
+.ref-tabs {
+  display: flex; gap: 12px; justify-content: center; margin-bottom: 40px;
+}
+.ref-tab {
+  padding: 10px 28px; border-radius: 30px; cursor: pointer;
+  font-size: 0.85rem; font-weight: 600; border: 1.5px solid var(--glass-border);
+  background: transparent; color: var(--text-dim); transition: all 0.25s;
+  font-family: 'DM Sans', sans-serif;
+}
+.ref-tab.active, .ref-tab:hover {
+  background: rgba(201,168,76,0.15); color: var(--gold); border-color: var(--gold);
+}
+.ref-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+.ref-item {
+  background: var(--navy-mid); border: 1px solid var(--glass-border);
+  border-radius: 12px; padding: 24px 20px; cursor: pointer;
+  text-align: center; transition: all 0.3s ease; position: relative;
+}
+.ref-item:hover {
+  transform: translateY(-4px); border-color: rgba(201,168,76,0.4);
+  background: rgba(201,168,76,0.08);
+}
+.ref-flag { font-size: 2rem; margin-bottom: 12px; }
+.ref-name { font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; }
+.ref-type { font-size: 0.72rem; color: var(--text-dim); }
+.ref-arrow {
+  position: absolute; top: 12px; right: 12px;
+  font-size: 0.75rem; color: var(--gold-dim); opacity: 0;
+  transition: opacity 0.25s;
+}
+.ref-item:hover .ref-arrow { opacity: 1; }
+
+/* ===== MONETISASI ===== */
+#monetisasi { padding: 100px 0; }
+.mono-header { text-align: center; margin-bottom: 60px; }
+.mono-flow {
+  display: flex; align-items: center; justify-content: center;
+  gap: 0; flex-wrap: wrap;
+}
+.mono-step {
+  background: var(--navy-mid); border: 1px solid var(--glass-border);
+  border-radius: 16px; padding: 32px 24px; text-align: center;
+  flex: 1; min-width: 160px; max-width: 200px;
+  transition: all 0.3s ease;
+}
+.mono-step:hover {
+  transform: translateY(-6px); border-color: var(--gold);
+  background: rgba(201,168,76,0.08);
+}
+.mono-arrow {
+  font-size: 1.8rem; color: var(--gold); padding: 0 8px; flex-shrink: 0;
+}
+.mono-icon { font-size: 2.5rem; margin-bottom: 16px; }
+.mono-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 1rem; font-weight: 700; margin-bottom: 8px;
+}
+.mono-val {
+  font-size: 1.4rem; font-weight: 700; color: var(--gold); margin-bottom: 8px;
+}
+.mono-desc { font-size: 0.78rem; color: var(--text-dim); line-height: 1.5; }
+
+/* ===== DASHBOARD MATERI ===== */
+#dashboard-materi { padding: 100px 0; background: linear-gradient(180deg, transparent, rgba(11,29,53,0.5)); }
+.materi-header { text-align: center; margin-bottom: 60px; }
+.accordion-wrap { max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
+.acc-item {
+  background: var(--navy-mid); border: 1px solid var(--glass-border);
+  border-radius: 12px; overflow: hidden; transition: border-color 0.25s;
+}
+.acc-item.open { border-color: rgba(201,168,76,0.4); }
+.acc-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 24px; cursor: pointer; transition: background 0.2s;
+}
+.acc-head:hover { background: rgba(201,168,76,0.07); }
+.acc-left { display: flex; align-items: center; gap: 14px; }
+.acc-num {
+  width: 34px; height: 34px;
+  background: linear-gradient(135deg, var(--gold-dim), var(--gold));
+  border-radius: 8px; display: flex; align-items: center; justify-content: center;
+  font-size: 0.8rem; font-weight: 700; color: var(--navy); flex-shrink: 0;
+}
+.acc-title { font-weight: 600; font-size: 0.95rem; }
+.acc-subtitle { font-size: 0.78rem; color: var(--text-dim); margin-top: 2px; }
+.acc-chevron {
+  font-size: 1.2rem; color: var(--gold-dim); transition: transform 0.3s;
+}
+.acc-item.open .acc-chevron { transform: rotate(180deg); }
+.acc-body {
+  display: none; padding: 0 24px 24px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  padding-top: 20px;
+}
+.acc-item.open .acc-body { display: block; }
+.acc-content { font-size: 0.87rem; color: var(--text-dim); line-height: 1.75; }
+.acc-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+.acc-tag {
+  background: rgba(201,168,76,0.1); color: var(--gold);
+  border-radius: 20px; padding: 4px 12px; font-size: 0.72rem; font-weight: 600;
+}
+
+/* ===== KONTAK ===== */
+#kontak { padding: 100px 0; }
+.kontak-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center;
+}
+.kontak-left {}
+.kontak-cards { display: flex; flex-direction: column; gap: 16px; margin-top: 40px; }
+.kontak-card {
+  background: var(--navy-mid); border: 1px solid var(--glass-border);
+  border-radius: 14px; padding: 22px 24px;
+  display: flex; align-items: center; gap: 16px;
+  text-decoration: none; transition: all 0.3s;
+}
+.kontak-card:hover { transform: translateX(6px); border-color: rgba(201,168,76,0.4); }
+.kontak-icon { font-size: 1.8rem; flex-shrink: 0; }
+.kontak-info {}
+.kontak-label { font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
+.kontak-value { font-size: 0.95rem; font-weight: 600; color: var(--white); margin-top: 2px; }
+.kontak-map {
+  background: var(--navy-mid); border: 1px solid var(--glass-border);
+  border-radius: 16px; padding: 40px; text-align: center;
+}
+.map-compass { font-size: 4rem; margin-bottom: 20px; }
+.map-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem; font-weight: 700; margin-bottom: 8px;
+}
+.map-addr { font-size: 0.9rem; color: var(--text-dim); line-height: 1.6; margin-bottom: 24px; }
+.map-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(201,168,76,0.15); border: 1px solid var(--gold);
+  color: var(--gold); border-radius: 8px; padding: 10px 20px;
+  font-size: 0.85rem; font-weight: 600; text-decoration: none;
+  transition: all 0.25s;
+}
+.map-btn:hover { background: var(--gold); color: var(--navy); }
+
+/* ===== FOOTER ===== */
+footer {
+  background: var(--navy-mid);
+  border-top: 1px solid var(--glass-border);
+  padding: 60px 24px 30px;
+}
+.footer-inner {
+  max-width: 1200px; margin: 0 auto;
+  display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 40px; margin-bottom: 40px;
+}
+.footer-brand {}
+.footer-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.8rem; font-weight: 700; color: var(--gold); margin-bottom: 12px;
+}
+.footer-tagline { font-size: 0.85rem; color: var(--text-dim); line-height: 1.7; max-width: 320px; }
+.footer-author {
+  margin-top: 20px; font-size: 0.8rem; color: var(--gold-dim);
+  display: flex; align-items: center; gap: 8px;
+}
+.footer-nav h4, .footer-links h4 {
+  font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1.5px;
+  color: var(--gold); font-weight: 700; margin-bottom: 16px;
+}
+.footer-nav ul, .footer-links ul { list-style: none; }
+.footer-nav ul li, .footer-links ul li { margin-bottom: 10px; }
+.footer-nav ul li a, .footer-links ul li a {
+  font-size: 0.85rem; color: var(--text-dim); text-decoration: none;
+  transition: color 0.2s;
+}
+.footer-nav ul li a:hover, .footer-links ul li a:hover { color: var(--gold); }
+.footer-bottom {
+  max-width: 1200px; margin: 0 auto;
+  padding-top: 24px; border-top: 1px solid var(--glass-border);
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 12px;
+}
+.footer-copy { font-size: 0.78rem; color: var(--text-dim); }
+.footer-copy span { color: var(--gold); }
+
+/* ===== MODAL / POPUP ===== */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 9000;
+  background: rgba(5,12,25,0.9); backdrop-filter: blur(8px);
+  display: none; align-items: center; justify-content: center;
+  padding: 20px;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: linear-gradient(135deg, var(--navy-mid), var(--navy-light));
+  border: 1px solid var(--glass-border);
+  border-radius: 20px; padding: 40px;
+  max-width: 640px; width: 100%; max-height: 85vh; overflow-y: auto;
+  position: relative;
+  animation: modalIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.85) translateY(30px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+.modal-close {
+  position: absolute; top: 16px; right: 16px;
+  width: 36px; height: 36px; border-radius: 50%;
+  background: rgba(255,255,255,0.07); border: 1px solid var(--glass-border);
+  color: var(--text-dim); font-size: 1.1rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s; font-family: monospace;
+}
+.modal-close:hover { background: rgba(201,168,76,0.2); color: var(--gold); }
+.modal-icon { font-size: 3.5rem; margin-bottom: 20px; }
+.modal-badge {
+  display: inline-block; background: rgba(201,168,76,0.15);
+  border: 1px solid rgba(201,168,76,0.3); color: var(--gold);
+  border-radius: 20px; padding: 4px 14px; font-size: 0.72rem;
+  font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px;
+  margin-bottom: 16px;
+}
+.modal-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.7rem; font-weight: 700; margin-bottom: 16px;
+}
+.modal-body { font-size: 0.9rem; color: var(--text-dim); line-height: 1.8; }
+.modal-body h4 { color: var(--gold); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; margin: 20px 0 8px; font-weight: 700; }
+.modal-body ul { list-style: none; }
+.modal-body ul li { padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05); padding-left: 16px; position: relative; }
+.modal-body ul li::before { content: '◆'; position: absolute; left: 0; color: var(--gold); font-size: 0.5rem; top: 10px; }
+.modal-link {
+  display: inline-flex; align-items: center; gap: 8px;
+  margin-top: 24px; background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+  color: var(--navy); border-radius: 8px; padding: 12px 24px;
+  font-weight: 700; font-size: 0.88rem; text-decoration: none;
+  transition: all 0.25s;
+}
+.modal-link:hover { transform: translateX(4px); }
+.modal-link2 {
+  display: inline-flex; align-items: center; gap: 8px;
+  margin-top: 12px; margin-left: 12px;
+  border: 1.5px solid var(--gold); color: var(--gold);
+  border-radius: 8px; padding: 12px 24px;
+  font-weight: 600; font-size: 0.88rem; text-decoration: none;
+  transition: all 0.25s; background: transparent;
+}
+.modal-link2:hover { background: rgba(201,168,76,0.15); }
+.modal-divider {
+  height: 1px; background: var(--glass-border); margin: 20px 0;
+}
+.modal-highlight {
+  background: rgba(201,168,76,0.08); border: 1px solid rgba(201,168,76,0.2);
+  border-radius: 10px; padding: 16px 20px; margin: 16px 0;
+  font-size: 0.88rem; color: var(--text);
+}
+.modal-highlight strong { color: var(--gold); }
+
+/* ===== SCROLL ANIMATIONS ===== */
+.fade-up {
+  opacity: 0; transform: translateY(30px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.fade-up.visible { opacity: 1; transform: translateY(0); }
+.fade-up-delay-1 { transition-delay: 0.15s; }
+.fade-up-delay-2 { transition-delay: 0.30s; }
+.fade-up-delay-3 { transition-delay: 0.45s; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+  nav ul { display: none; }
+  .hamburger { display: flex; }
+  .timeline { flex-direction: column; align-items: center; }
+  .timeline::before { display: none; }
+  .kontak-grid { grid-template-columns: 1fr; }
+  .footer-inner { grid-template-columns: 1fr; }
+  .mono-flow { flex-direction: column; }
+  .mono-arrow { transform: rotate(90deg); }
+  .hero-svg-wrap { display: none; }
+  .hero-stats { gap: 24px; }
+}
+@media (max-width: 600px) {
+  .modal { padding: 28px 20px; }
+  .modal-title { font-size: 1.35rem; }
+  .ref-grid { grid-template-columns: repeat(2, 1fr); }
+  .phase { padding: 0 8px; }
+}
+</style>
+</head>
+<body>
+
+<div class="ocean-bg">
+  <div class="wave"></div>
+  <div class="stars"></div>
+</div>
+<div class="grid-overlay"></div>
+
+<!-- ===== NAVBAR ===== -->
+<div id="navbar">
+  <div class="nav-inner">
+    <a href="#beranda" class="nav-logo">
+      <div class="nav-logo-icon">⚓</div>
+      <div>
+        <div class="nav-logo-text">M.E.C</div>
+        <span class="nav-logo-sub">Maritime English Course</span>
+      </div>
+    </a>
+    <nav>
+      <ul>
+        <li><a href="#beranda">Beranda</a></li>
+        <li><a href="#roadmap">Roadmap</a></li>
+        <li><a href="#paket-pelatihan">Paket</a></li>
+        <li><a href="#rps">RPS</a></li>
+        <li><a href="#teknologi-rls">RLS Tech</a></li>
+        <li><a href="#referensi-global">Referensi</a></li>
+        <li><a href="#monetisasi">Monetisasi</a></li>
+        <li><a href="#dashboard-materi">Materi</a></li>
+        <li><a href="#kontak">Kontak</a></li>
+      </ul>
+    </nav>
+    <div class="hamburger" id="hamburgerBtn" onclick="toggleMobile()">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</div>
+<div class="mobile-menu" id="mobileMenu">
+  <ul>
+    <li><a href="#beranda" onclick="toggleMobile()">🏠 Beranda</a></li>
+    <li><a href="#roadmap" onclick="toggleMobile()">🗺️ Roadmap</a></li>
+    <li><a href="#paket-pelatihan" onclick="toggleMobile()">🎓 Paket Pelatihan</a></li>
+    <li><a href="#rps" onclick="toggleMobile()">📄 RPS</a></li>
+    <li><a href="#teknologi-rls" onclick="toggleMobile()">🤖 RLS Tech</a></li>
+    <li><a href="#referensi-global" onclick="toggleMobile()">🌍 Referensi Global</a></li>
+    <li><a href="#monetisasi" onclick="toggleMobile()">📊 Monetisasi</a></li>
+    <li><a href="#dashboard-materi" onclick="toggleMobile()">📚 Dashboard Materi</a></li>
+    <li><a href="#kontak" onclick="toggleMobile()">📞 Kontak</a></li>
+  </ul>
+</div>
+
+<!-- ===== HERO ===== -->
+<section id="beranda">
+  <div class="section-container">
+    <div class="hero-content">
+      <div class="hero-eyebrow">Kampung Inggris Pare, Kediri</div>
+      <h1 class="hero-title">
+        <span class="line1">M.E.C</span>
+        <span class="line2">Maritime English Course</span>
+        <span class="line3">Training Center &amp; Talent Bridge</span>
+      </h1>
+      <p class="hero-sub">
+        <em>Dari Pelaut, Untuk Pelaut</em> — Membangun jalur nyata menuju karir global di dunia maritim dan hospitality dengan sistem pelatihan berbasis Technology terdepan.
+      </p>
+      <div class="hero-actions">
+        <a href="#paket-pelatihan" class="btn-primary">⛵ Lihat Program</a>
+        <a href="#kontak" class="btn-outline">✉️ Daftar Sekarang</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat-item">
+          <div class="stat-num">6</div>
+          <div class="stat-label">Bulan Program</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">4</div>
+          <div class="stat-label">Paket Pilihan</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">10+</div>
+          <div class="stat-label">Referensi Global</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">AI</div>
+          <div class="stat-label">Powered RLS</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Ship SVG Background -->
+  <div class="hero-svg-wrap">
+    <svg viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg" fill="none">
+      <path d="M50 300 Q150 200 300 220 Q420 240 560 180" stroke="#C9A84C" stroke-width="2" opacity="0.4"/>
+      <path d="M200 320 L200 120 L260 80 L260 320 Z" stroke="#C9A84C" stroke-width="1.5" fill="rgba(201,168,76,0.05)"/>
+      <path d="M260 160 L380 120 L380 280 L260 280 Z" stroke="#C9A84C" stroke-width="1.5" fill="rgba(201,168,76,0.05)"/>
+      <path d="M140 320 L550 320 L520 350 L160 350 Z" stroke="#C9A84C" stroke-width="1.5" fill="rgba(201,168,76,0.08)"/>
+      <circle cx="300" cy="90" r="20" stroke="#C9A84C" stroke-width="1.5" fill="none"/>
+      <path d="M300 70 L300 110 M280 90 L320 90" stroke="#C9A84C" stroke-width="1"/>
+      <path d="M200 120 L260 80" stroke="#C9A84C" stroke-width="1" stroke-dasharray="4,4"/>
+      <path d="M30 320 Q100 290 200 320" stroke="#C9A84C" stroke-width="1" opacity="0.3"/>
+      <path d="M380 300 Q450 280 560 300" stroke="#C9A84C" stroke-width="1" opacity="0.3"/>
+    </svg>
+  </div>
+</section>
+
+<!-- ===== ROADMAP ===== -->
+<section id="roadmap">
+  <div class="section-container">
+    <div class="roadmap-header fade-up">
+      <div class="section-badge">⚓ Peta Karir Maritim</div>
+      <h2 class="section-title">Roadmap <span>6 Bulan</span></h2>
+      <p class="section-sub">Perjalanan sistematis dari dasar hingga mahir — tiga fase terstruktur menuju karir global.</p>
+    </div>
+    <div class="timeline">
+      <div class="phase fade-up" onclick="openPhaseModal(1)">
+        <div class="phase-icon">
+          ⚓
+          <div class="phase-num">1</div>
+        </div>
+        <div class="phase-body">
+          <div class="phase-tag">Fase I</div>
+          <div class="phase-name">Foundation</div>
+          <div class="phase-months">📅 Bulan 1 – 2</div>
+          <div class="phase-desc">Penguatan fondasi Maritime English, kosa kata teknis, dan komunikasi dasar STCW.</div>
+          <div class="phase-more">Klik untuk detail ›</div>
+        </div>
+      </div>
+      <div class="phase fade-up fade-up-delay-1" onclick="openPhaseModal(2)">
+        <div class="phase-icon">
+          🚢
+          <div class="phase-num">2</div>
+        </div>
+        <div class="phase-body">
+          <div class="phase-tag">Fase II</div>
+          <div class="phase-name">Professional Operation</div>
+          <div class="phase-months">📅 Bulan 3 – 4</div>
+          <div class="phase-desc">Prosedur operasional bridge & engine, GMDSS communication, dan simulasi real-world.</div>
+          <div class="phase-more">Klik untuk detail ›</div>
+        </div>
+      </div>
+      <div class="phase fade-up fade-up-delay-2" onclick="openPhaseModal(3)">
+        <div class="phase-icon">
+          🏆
+          <div class="phase-num">3</div>
+        </div>
+        <div class="phase-body">
+          <div class="phase-tag">Fase III</div>
+          <div class="phase-name">Career Mastery</div>
+          <div class="phase-months">📅 Bulan 5 – 6</div>
+          <div class="phase-desc">Interview preparation, placement assistance, dan certifikasi internasional siap kerja.</div>
+          <div class="phase-more">Klik untuk detail ›</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PAKET PELATIHAN ===== -->
+<section id="paket-pelatihan">
+  <div class="section-container">
+    <div class="paket-header fade-up">
+      <div class="section-badge">🎓 Training Packages</div>
+      <h2 class="section-title">Paket <span>Pelatihan</span></h2>
+      <p class="section-sub">Pilih program yang sesuai dengan jalur karir Anda — setiap paket dirancang oleh praktisi maritim berpengalaman.</p>
+    </div>
+    <div class="cards-grid">
+      <div class="pkg-card fade-up" onclick="openPkgModal(1)">
+        <div class="pkg-icon">🧭</div>
+        <div class="pkg-name">The Bridge Watchkeeper</div>
+        <div class="pkg-tagline">Deck Officer Program</div>
+        <div class="pkg-price">Rp 2,8 Jt</div>
+        <div class="pkg-price-note">/ 2 bulan intensif</div>
+        <div class="pkg-duration">⏱ 60 sesi × 90 menit</div>
+        <ul class="pkg-modules">
+          <li>COLREGS & Bridge Communication</li>
+          <li>VHF/GMDSS Phraseology</li>
+          <li>Chart Reading & Navigation Terms</li>
+          <li>Crew Management English</li>
+        </ul>
+        <button class="pkg-cta">🛒 Beli Sekarang</button>
+      </div>
+      <div class="pkg-card fade-up fade-up-delay-1" onclick="openPkgModal(2)">
+        <div class="pkg-icon">⚙️</div>
+        <div class="pkg-name">The Engine Voice</div>
+        <div class="pkg-tagline">Marine Engineer Program</div>
+        <div class="pkg-price">Rp 2,6 Jt</div>
+        <div class="pkg-price-note">/ 2 bulan intensif</div>
+        <div class="pkg-duration">⏱ 55 sesi × 90 menit</div>
+        <ul class="pkg-modules">
+          <li>Engine Room Communication</li>
+          <li>Technical Reporting English</li>
+          <li>Maintenance & Repair Terms</li>
+          <li>Safety Procedures Language</li>
+        </ul>
+        <button class="pkg-cta">🛒 Beli Sekarang</button>
+      </div>
+      <div class="pkg-card fade-up fade-up-delay-2" onclick="openPkgModal(3)">
+        <div class="pkg-icon">🏨</div>
+        <div class="pkg-name">Hospitality Elite</div>
+        <div class="pkg-tagline">Cruise & Hotel Maritime</div>
+        <div class="pkg-price">Rp 2,4 Jt</div>
+        <div class="pkg-price-note">/ 2 bulan intensif</div>
+        <div class="pkg-duration">⏱ 50 sesi × 90 menit</div>
+        <ul class="pkg-modules">
+          <li>Guest Service Communication</li>
+          <li>Food & Beverage English</li>
+          <li>Complaint Handling</li>
+          <li>Intercultural Communication</li>
+        </ul>
+        <button class="pkg-cta">🛒 Beli Sekarang</button>
+      </div>
+      <div class="pkg-card featured fade-up fade-up-delay-3" onclick="openPkgModal(4)">
+        <div class="pkg-badge">⭐ TERLARIS</div>
+        <div class="pkg-icon">🌐</div>
+        <div class="pkg-name">Full All-Round Mariner</div>
+        <div class="pkg-tagline">Complete Maritime Professional</div>
+        <div class="pkg-price">Rp 6,5 Jt</div>
+        <div class="pkg-price-note">/ 6 bulan lengkap (hemat 25%)</div>
+        <div class="pkg-duration">⏱ 180 sesi × 90 menit</div>
+        <ul class="pkg-modules">
+          <li>Semua modul Bridge + Engine</li>
+          <li>Hospitality Elite Module</li>
+          <li>AI-Powered RLS System</li>
+          <li>Job Placement Assistance</li>
+          <li>Certifikasi & Portfolio</li>
+        </ul>
+        <button class="pkg-cta">🛒 Beli Sekarang</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== RPS TABLE ===== -->
+<section id="rps">
+  <div class="section-container">
+    <div class="rps-header fade-up">
+      <div class="section-badge">📄 Rencana Pembelajaran Semester</div>
+      <h2 class="section-title">RPS <span>Interaktif</span></h2>
+      <p class="section-sub">Klik setiap baris untuk melihat detail topik, metode pengajaran, dan indikator ketercapaian.</p>
+    </div>
+    <div class="table-wrap fade-up">
+      <table>
+        <thead>
+          <tr>
+            <th>Minggu</th>
+            <th>Topik</th>
+            <th>Subtopik</th>
+            <th>Indikator</th>
+            <th>Durasi</th>
+            <th>Metode</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr onclick="openRpsModal(1)">
+            <td class="td-week">Wk 1–2</td>
+            <td>Maritime English Fundamentals</td>
+            <td>Basic vocabulary, phonetics, STCW terms</td>
+            <td>Mampu menyebutkan 200+ kosa kata teknis</td>
+            <td class="td-duration">6 jam</td>
+            <td><span class="td-method">Blended</span></td>
+          </tr>
+          <tr onclick="openRpsModal(2)">
+            <td class="td-week">Wk 3–4</td>
+            <td>Bridge Communication</td>
+            <td>COLREGS, VHF phraseology, reporting</td>
+            <td>Simulasi komunikasi bridge-to-bridge</td>
+            <td class="td-duration">6 jam</td>
+            <td><span class="td-method">Simulasi</span></td>
+          </tr>
+          <tr onclick="openRpsModal(3)">
+            <td class="td-week">Wk 5–6</td>
+            <td>Engine Room Language</td>
+            <td>Technical terms, maintenance English</td>
+            <td>Menulis laporan teknis dalam bahasa Inggris</td>
+            <td class="td-duration">6 jam</td>
+            <td><span class="td-method">Workshop</span></td>
+          </tr>
+          <tr onclick="openRpsModal(4)">
+            <td class="td-week">Wk 7–8</td>
+            <td>GMDSS &amp; Safety Communication</td>
+            <td>Mayday, Pan-Pan, distress signals</td>
+            <td>Role-play prosedur darurat lengkap</td>
+            <td class="td-duration">6 jam</td>
+            <td><span class="td-method">Role-Play</span></td>
+          </tr>
+          <tr onclick="openRpsModal(5)">
+            <td class="td-week">Wk 9–10</td>
+            <td>Port State Control (PSC) English</td>
+            <td>Inspection procedures, documentation</td>
+            <td>Mampu menjawab pertanyaan PSC officer</td>
+            <td class="td-duration">6 jam</td>
+            <td><span class="td-method">Mock Drill</span></td>
+          </tr>
+          <tr onclick="openRpsModal(6)">
+            <td class="td-week">Wk 11–12</td>
+            <td>Cargo Operations Language</td>
+            <td>Loading, stowage, Bill of Lading</td>
+            <td>Membuat cargo manifest dalam bahasa Inggris</td>
+            <td class="td-duration">6 jam</td>
+            <td><span class="td-method">Case Study</span></td>
+          </tr>
+          <tr onclick="openRpsModal(7)">
+            <td class="td-week">Wk 13–14</td>
+            <td>Medical &amp; First Aid English</td>
+            <td>Medical terminology, MFAG communication</td>
+            <td>Komunikasi darurat medis via radio</td>
+            <td class="td-duration">6 jam</td>
+            <td><span class="td-method">Simulasi</span></td>
+          </tr>
+          <tr onclick="openRpsModal(8)">
+            <td class="td-week">Wk 15–16</td>
+            <td>Job Interview Preparation</td>
+            <td>CV, cover letter, mock interview</td>
+            <td>Lolos seleksi crewing agency internasional</td>
+            <td class="td-duration">6 jam</td>
+            <td><span class="td-method">Interview</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ===== RLS TECH ===== -->
+<section id="teknologi-rls">
+  <div class="section-container">
+    <div class="rls-header fade-up">
+      <div class="section-badge">🤖 AI-Powered System</div>
+      <h2 class="section-title">Teknologi <span>RLS</span></h2>
+      <p class="section-sub">Responsive Learning System — ekosistem belajar cerdas yang beradaptasi dengan kemampuan setiap siswa secara real-time.</p>
+    </div>
+    <div class="rls-grid">
+      <div class="rls-card fade-up" onclick="openRlsModal(1)">
+        <div class="rls-icon">🎙️</div>
+        <div class="rls-name">Voice Recognition</div>
+        <div class="rls-desc">Analisis pengucapan maritime phraseology secara real-time dengan akurasi tinggi.</div>
+        <div class="rls-tag">AI Core</div>
+      </div>
+      <div class="rls-card fade-up fade-up-delay-1" onclick="openRlsModal(2)">
+        <div class="rls-icon">📊</div>
+        <div class="rls-name">Skill Dashboard</div>
+        <div class="rls-desc">Visualisasi progres belajar harian, mingguan, dan bulanan dalam dashboard personal.</div>
+        <div class="rls-tag">Analytics</div>
+      </div>
+      <div class="rls-card fade-up fade-up-delay-2" onclick="openRlsModal(3)">
+        <div class="rls-icon">🧠</div>
+        <div class="rls-name">AI Feedback</div>
+        <div class="rls-desc">Umpan balik instan berbasis AI untuk grammar, intonasi, dan kelancaran berbicara.</div>
+        <div class="rls-tag">NLP Engine</div>
+      </div>
+      <div class="rls-card fade-up fade-up-delay-3" onclick="openRlsModal(4)">
+        <div class="rls-icon">🔄</div>
+        <div class="rls-name">Adaptive Learning</div>
+        <div class="rls-desc">Materi otomatis menyesuaikan tingkat kesulitan berdasarkan performa siswa.</div>
+        <div class="rls-tag">Machine Learning</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== REFERENSI GLOBAL ===== -->
+<section id="referensi-global">
+  <div class="section-container">
+    <div class="ref-header fade-up">
+      <div class="section-badge">🌍 Global & Local References</div>
+      <h2 class="section-title">Referensi <span>Institusi</span></h2>
+      <p class="section-sub">M.E.C terinspirasi dan merujuk pada standar institusi maritim terbaik dunia dan Indonesia.</p>
+    </div>
+    <div class="ref-tabs fade-up">
+      <button class="ref-tab active" onclick="switchRefTab('intl', this)">🌐 Internasional</button>
+      <button class="ref-tab" onclick="switchRefTab('indo', this)">🇮🇩 Indonesia</button>
+    </div>
+    <div id="ref-intl" class="ref-grid fade-up">
+      <div class="ref-item" onclick="openRefModal('imo')">
+        <div class="ref-arrow">↗</div>
+        <div class="ref-flag">🌐</div>
+        <div class="ref-name">IMO Model Course 3.17</div>
+        <div class="ref-type">International Maritime Organization</div>
+      </div>
+      <div class="ref-item" onclick="openRefModal('marlins')">
+        <div class="ref-arrow">↗</div>
+        <div class="ref-flag">🇬🇧</div>
+        <div class="ref-name">Marlins Test</div>
+        <div class="ref-type">Maritime Language Assessment</div>
+      </div>
+      <div class="ref-item" onclick="openRefModal('stcgroup')">
+        <div class="ref-arrow">↗</div>
+        <div class="ref-flag">🇳🇱</div>
+        <div class="ref-name">STC Group Rotterdam</div>
+        <div class="ref-type">Maritime Training Netherlands</div>
+      </div>
+      <div class="ref-item" onclick="openRefModal('warsash')">
+        <div class="ref-arrow">↗</div>
+        <div class="ref-flag">🇬🇧</div>
+        <div class="ref-name">Warsash Maritime School</div>
+        <div class="ref-type">Southampton Solent University</div>
+      </div>
+      <div class="ref-item" onclick="openRefModal('marilang')">
+        <div class="ref-arrow">↗</div>
+        <div class="ref-flag">🇪🇺</div>
+        <div class="ref-name">MariLANG Project</div>
+        <div class="ref-type">EU Maritime Language Program</div>
+      </div>
+    </div>
+    <div id="ref-indo" class="ref-grid fade-up" style="display:none">
+      <div class="ref-item" onclick="openRefModal('pip')">
+        <div class="ref-arrow">↗</div>
+        <div class="ref-flag">🇮🇩</div>
+        <div class="ref-name">PIP Semarang</div>
+        <div class="ref-type">Politeknik Ilmu Pelayaran</div>
+      </div>
+      <div class="ref-item" onclick="openRefModal('polimarin')">
+        <div class="ref-arrow">↗</div>
+        <div class="ref-flag">🇮🇩</div>
+        <div class="ref-name">Polimarin</div>
+        <div class="ref-type">Politeknik Maritim Negeri Indonesia</div>
+      </div>
+      <div class="ref-item" onclick="openRefModal('bp3ip')">
+        <div class="ref-arrow">↗</div>
+        <div class="ref-flag">🇮🇩</div>
+        <div class="ref-name">BP3IP Jakarta</div>
+        <div class="ref-type">Balai Pendidikan & Pelatihan Pelayaran</div>
+      </div>
+      <div class="ref-item" onclick="openRefModal('stip')">
+        <div class="ref-arrow">↗</div>
+        <div class="ref-flag">🇮🇩</div>
+        <div class="ref-name">STIP Jakarta</div>
+        <div class="ref-type">Sekolah Tinggi Ilmu Pelayaran</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== MONETISASI ===== -->
+<section id="monetisasi">
+  <div class="section-container">
+    <div class="mono-header fade-up">
+      <div class="section-badge">📊 Revenue Strategy</div>
+      <h2 class="section-title">Strategi <span>Monetisasi</span></h2>
+      <p class="section-sub">Ekosistem pendapatan berkelanjutan dari free acquisition hingga enterprise placement.</p>
+    </div>
+    <div class="mono-flow fade-up">
+      <div class="mono-step">
+        <div class="mono-icon">🆓</div>
+        <div class="mono-name">Free Test</div>
+        <div class="mono-val">Rp 0</div>
+        <div class="mono-desc">Placement test gratis untuk menarik peserta baru & mengukur level awal</div>
+      </div>
+      <div class="mono-arrow">→</div>
+      <div class="mono-step">
+        <div class="mono-icon">📦</div>
+        <div class="mono-name">Modular Sales</div>
+        <div class="mono-val">Rp 2–3 Jt</div>
+        <div class="mono-desc">Penjualan modul per paket sesuai kebutuhan spesifik peserta</div>
+      </div>
+      <div class="mono-arrow">→</div>
+      <div class="mono-step">
+        <div class="mono-icon">🚢</div>
+        <div class="mono-name">Placement</div>
+        <div class="mono-val">Fee 10–15%</div>
+        <div class="mono-desc">Komisi penempatan kerja ke shipping company & crewing agency</div>
+      </div>
+      <div class="mono-arrow">→</div>
+      <div class="mono-step">
+        <div class="mono-icon">♾️</div>
+        <div class="mono-name">Subscription</div>
+        <div class="mono-val">Rp 299K/bln</div>
+        <div class="mono-desc">Akses platform RLS + update materi + komunitas alumni selamanya</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== DASHBOARD MATERI ===== -->
+<section id="dashboard-materi">
+  <div class="section-container">
+    <div class="materi-header fade-up">
+      <div class="section-badge">📚 Learning Modules</div>
+      <h2 class="section-title">Dashboard <span>Materi</span></h2>
+      <p class="section-sub">10 modul pembelajaran terstruktur — klik untuk expand dan jelajahi konten setiap modul.</p>
+    </div>
+    <div class="accordion-wrap fade-up" id="accordion"></div>
+  </div>
+</section>
+
+<!-- ===== KONTAK ===== -->
+<section id="kontak">
+  <div class="section-container">
+    <div class="kontak-grid">
+      <div class="kontak-left">
+        <div class="section-badge fade-up">📞 Get In Touch</div>
+        <h2 class="section-title fade-up">Hubungi <span>Kami</span></h2>
+        <p class="section-sub fade-up">Siap membantu Anda memulai perjalanan menuju karir maritim global. Konsultasi gratis setiap hari.</p>
+        <div class="kontak-cards fade-up">
+          <a href="https://wa.me/6281234567890" target="_blank" class="kontak-card">
+            <div class="kontak-icon">💬</div>
+            <div class="kontak-info">
+              <div class="kontak-label">WhatsApp</div>
+              <div class="kontak-value">+62 812-3456-7890</div>
+            </div>
+          </a>
+          <a href="mailto:info@mecmaritim.id" class="kontak-card">
+            <div class="kontak-icon">✉️</div>
+            <div class="kontak-info">
+              <div class="kontak-label">Email</div>
+              <div class="kontak-value">info@mecmaritim.id</div>
+            </div>
+          </a>
+          <a href="https://maps.google.com/?q=Kampung+Inggris+Pare+Kediri" target="_blank" class="kontak-card">
+            <div class="kontak-icon">📍</div>
+            <div class="kontak-info">
+              <div class="kontak-label">Lokasi</div>
+              <div class="kontak-value">Kampung Inggris, Pare — Kediri, Jawa Timur</div>
+            </div>
+          </a>
+        </div>
+      </div>
+      <div class="kontak-map fade-up">
+        <div class="map-compass">🧭</div>
+        <div class="map-name">M.E.C Training Center</div>
+        <div class="map-addr">
+          Kampung Inggris, Desa Pelem<br>
+          Kecamatan Pare, Kabupaten Kediri<br>
+          Jawa Timur, Indonesia 64212
+        </div>
+        <a href="https://maps.google.com/?q=Kampung+Inggris+Pare+Kediri" target="_blank" class="map-btn">
+          🗺️ Buka di Google Maps
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="footer-logo">⚓ M.E.C</div>
+      <div class="footer-tagline">
+        Maritime English Course — Training Center &amp; Talent Bridge Maritim dan Hospitality.<br>
+        Membangun SDM pelaut Indonesia berkelas global dari Kampung Inggris Pare, Kediri.
+      </div>
+      <div class="footer-author">
+        ✍️ Website dibuat oleh <strong style="color:var(--gold);margin-left:4px;">Rafael Sukirno, CE — Founder M.E.C</strong>
+      </div>
+    </div>
+    <div class="footer-nav">
+      <h4>Navigasi</h4>
+      <ul>
+        <li><a href="#beranda">Beranda</a></li>
+        <li><a href="#roadmap">Roadmap</a></li>
+        <li><a href="#paket-pelatihan">Paket Pelatihan</a></li>
+        <li><a href="#rps">RPS Interaktif</a></li>
+        <li><a href="#teknologi-rls">Teknologi RLS</a></li>
+        <li><a href="#dashboard-materi">Dashboard Materi</a></li>
+      </ul>
+    </div>
+    <div class="footer-links">
+      <h4>Referensi</h4>
+      <ul>
+        <li><a href="https://www.imo.org" target="_blank">IMO International</a></li>
+        <li><a href="https://www.marlins.co.uk" target="_blank">Marlins Test</a></li>
+        <li><a href="https://www.stcgroup.nl" target="_blank">STC Rotterdam</a></li>
+        <li><a href="https://www.pip-semarang.ac.id" target="_blank">PIP Semarang</a></li>
+        <li><a href="https://www.stip.ac.id" target="_blank">STIP Jakarta</a></li>
+        <li><a href="https://www.dephub.go.id" target="_blank">Kemenhub RI</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-copy">
+      © 2026 <span>M.E.C — Maritime English Course</span><br>
+      Training Center &amp; Talent Bridge Maritim dan Hospitality | Kampung Inggris Pare, Kediri
+    </div>
+    <div class="footer-copy" style="text-align:right">
+      Website dibuat oleh <span>Rafael Sukirno, CE — Founder M.E.C</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ===== MODAL OVERLAY ===== -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal" id="modalContent">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+// ====== ACCORDION DATA ======
+const modules = [
+  { num:"01", title:"Maritime Vocabulary Core", sub:"Foundation Module", icon:"📖",
+    content:"Penguasaan kosa kata fundamental Maritime English mencakup 500+ terminologi teknis pelayaran, nautical terms, engineering vocabulary, dan istilah keselamatan yang digunakan di kapal-kapal berbendera internasional.",
+    tags:["Vocabulary", "STCW", "Nautical Terms", "Safety Language"] },
+  { num:"02", title:"Phonetics & Pronunciation", sub:"Speaking Skills", icon:"🎙️",
+    content:"Pelatihan pengucapan standar IMO Standard Marine Communication Phrases (SMCP). Fokus pada intonasi, stress pattern, dan clarity yang dibutuhkan dalam komunikasi radio maritim.",
+    tags:["Pronunciation", "SMCP", "Radio English", "Accent Reduction"] },
+  { num:"03", title:"Bridge Communication", sub:"Deck Officer Focus", icon:"🧭",
+    content:"Bahasa komunikasi resmi di anjungan kapal: situational reports, COLREGS communication, VTS/VHF procedures, dan pilot boarding/handover language sesuai standar Port State Control.",
+    tags:["VHF", "COLREGS", "Bridge Team", "Navigation"] },
+  { num:"04", title:"Engine Room English", sub:"Marine Engineer Focus", icon:"⚙️",
+    content:"Terminologi ruang mesin, prosedur maintenance reporting, troubleshooting language, dan komunikasi engine room-bridge. Mencakup laporan teknis dan deficiency report writing.",
+    tags:["Engine Room", "Technical Writing", "Maintenance", "Reporting"] },
+  { num:"05", title:"GMDSS & Emergency Communication", sub:"Safety Critical", icon:"🆘",
+    content:"Prosedur komunikasi darurat lengkap: Mayday/Pan-Pan/Sécurité calls, distress signal protocols, SAR coordination language, dan emergency muster communication sesuai SOLAS Chapter IV.",
+    tags:["GMDSS", "Mayday", "SAR", "Emergency"] },
+  { num:"06", title:"Port Operations & Documentation", sub:"Commercial Maritime", icon:"🏭",
+    content:"Bahasa operasional pelabuhan: cargo handling instructions, stowage orders, Bill of Lading terminology, Port State Control inspection language, dan Notice of Readiness (NOR) preparation.",
+    tags:["Port Operations", "Cargo", "Documentation", "PSC"] },
+  { num:"07", title:"Medical English at Sea", sub:"Health & Safety", icon:"🏥",
+    content:"Komunikasi medis darurat di laut menggunakan MFAG (Medical First Aid Guide), telemedicine procedures, casualty reporting, dan koordinasi medis dengan pihak darat.",
+    tags:["Medical English", "MFAG", "First Aid", "Telemedicine"] },
+  { num:"08", title:"Hospitality & Cruise Communication", sub:"Passenger Vessel", icon:"🛳️",
+    content:"Bahasa pelayanan kapal pesiar dan ferry penumpang: guest service communication, complaint handling, intercultural communication, food & beverage service language, dan shore excursion briefing.",
+    tags:["Hospitality", "Guest Service", "Cruise", "Intercultural"] },
+  { num:"09", title:"Written Maritime English", sub:"Professional Writing", icon:"✍️",
+    content:"Penulisan profesional: Official Log Book entries, incident reports, near-miss reports, cargo surveys, charter party correspondence, dan crewing agency email communication.",
+    tags:["Report Writing", "Log Book", "Correspondence", "Documentation"] },
+  { num:"10", title:"Career Preparation & Interview", sub:"Job Placement Module", icon:"🏆",
+    content:"Persiapan karir global: CV/resume writing, cover letter, mock interview dengan crewing agency internasional, seafarer competency certificate language, dan networking dalam industri maritim.",
+    tags:["CV Writing", "Interview", "Job Placement", "Networking"] }
+];
+
+function buildAccordion() {
+  const wrap = document.getElementById('accordion');
+  modules.forEach((m, i) => {
+    wrap.innerHTML += `
+    <div class="acc-item" id="acc${i}">
+      <div class="acc-head" onclick="toggleAcc(${i})">
+        <div class="acc-left">
+          <div class="acc-num">${m.num}</div>
+          <div>
+            <div class="acc-title">${m.icon} ${m.title}</div>
+            <div class="acc-subtitle">${m.sub}</div>
+          </div>
+        </div>
+        <div class="acc-chevron">▾</div>
+      </div>
+      <div class="acc-body">
+        <div class="acc-content">${m.content}</div>
+        <div class="acc-tags">${m.tags.map(t=>`<span class="acc-tag">${t}</span>`).join('')}</div>
+      </div>
+    </div>`;
+  });
+}
+
+function toggleAcc(i) {
+  const item = document.getElementById('acc'+i);
+  item.classList.toggle('open');
+}
+
+// ====== PHASE MODAL DATA ======
+const phaseData = {
+  1: {
+    icon:"⚓", badge:"Fase I — Bulan 1–2",
+    title:"Foundation Phase",
+    body:`<h4>Tujuan Fase</h4>
+Membangun fondasi kuat Maritime English untuk komunikasi teknis dasar di lingkungan kapal dan institusi maritim.
+<div class="modal-highlight"><strong>Target Lulusan:</strong> Peserta mampu berkomunikasi dalam situasi rutin di kapal menggunakan Maritime English standar IMO.</div>
+<h4>Materi Utama</h4>
+<ul>
+  <li>Maritime Vocabulary: 500+ terminologi teknis pelayaran</li>
+  <li>STCW Basic Safety English — prosedur keselamatan dasar</li>
+  <li>Phonetics & SMCP Pronunciation — standar IMO</li>
+  <li>Basic Radio Communication — VHF Channel 16 procedures</li>
+  <li>Nautical Chart Reading Language</li>
+  <li>Watch Keeping Terminology</li>
+</ul>
+<h4>Metode Pembelajaran</h4>
+<ul>
+  <li>Blended learning: tatap muka + platform digital RLS</li>
+  <li>Voice recognition practice 30 menit/sesi</li>
+  <li>Vocabulary drilling dengan maritime flashcards AI</li>
+  <li>Weekly assessment &amp; progress tracking</li>
+</ul>`
+  },
+  2: {
+    icon:"🚢", badge:"Fase II — Bulan 3–4",
+    title:"Professional Operation Phase",
+    body:`<h4>Tujuan Fase</h4>
+Penguasaan bahasa operasional profesional di atas kapal: bridge, engine room, cargo, dan prosedur darurat.
+<div class="modal-highlight"><strong>Target Lulusan:</strong> Peserta mampu melaksanakan tugas jaga dan operasional kapal menggunakan Maritime English dengan percaya diri.</div>
+<h4>Materi Utama</h4>
+<ul>
+  <li>Bridge Watch Communication — COLREGS full application</li>
+  <li>GMDSS & Emergency Procedures — Mayday/Pan-Pan/Sécurité</li>
+  <li>Engine Room Operation Language — maintenance & reporting</li>
+  <li>Port State Control Interview Preparation</li>
+  <li>Cargo Operations English — Bill of Lading, stowage plans</li>
+  <li>Medical English at Sea — MFAG procedures</li>
+</ul>
+<h4>Simulasi &amp; Drill</h4>
+<ul>
+  <li>Bridge simulator communication exercise</li>
+  <li>PSC inspection mock drill</li>
+  <li>Emergency scenario role-play</li>
+  <li>Technical report writing workshop</li>
+</ul>`
+  },
+  3: {
+    icon:"🏆", badge:"Fase III — Bulan 5–6",
+    title:"Career Mastery Phase",
+    body:`<h4>Tujuan Fase</h4>
+Mempersiapkan peserta untuk memasuki pasar kerja maritim internasional dengan kemampuan bahasa dan kepercayaan diri penuh.
+<div class="modal-highlight"><strong>Target Lulusan:</strong> Peserta siap menghadapi seleksi crewing agency internasional dan bekerja di kapal berbendera asing.</div>
+<h4>Materi Utama</h4>
+<ul>
+  <li>Professional CV & Cover Letter Writing</li>
+  <li>Mock Interview dengan crewing agency internasional</li>
+  <li>Marlins Test Preparation — mencapai skor 75+</li>
+  <li>Competency Certificate Language & Documentation</li>
+  <li>Intercultural Communication for Global Ships</li>
+  <li>Negotiation & Contract Understanding</li>
+</ul>
+<h4>Layanan Penempatan</h4>
+<ul>
+  <li>Database crewing agency partner M.E.C</li>
+  <li>Job matching & referral letter</li>
+  <li>Alumni network di kapal internasional</li>
+  <li>Post-placement English support</li>
+</ul>`
+  }
+};
+
+function openPhaseModal(n) {
+  const d = phaseData[n];
+  document.getElementById('modalBody').innerHTML = `
+    <div class="modal-icon">${d.icon}</div>
+    <div class="modal-badge">${d.badge}</div>
+    <div class="modal-title">${d.title}</div>
+    <div class="modal-body">${d.body}</div>`;
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+// ====== PACKAGE MODAL DATA ======
+const pkgData = {
+  1: { icon:"🧭", name:"The Bridge Watchkeeper",
+    body:`<h4>Target Peserta</h4>
+Calon deck officer, taruna pelayaran jurusan nautika, atau pelaut yang ingin upgrade kemampuan komunikasi anjungan.
+<div class="modal-highlight"><strong>Outcome:</strong> Mampu melaksanakan komunikasi bridge watch sesuai standar STCW dan IMO SMCP.</div>
+<h4>Modul Lengkap</h4>
+<ul>
+  <li>COLREGS Language & Situational Reporting</li>
+  <li>VHF Radio Procedures — Channel 16 & Working channels</li>
+  <li>VTS Communication — Port entry/departure procedures</li>
+  <li>Pilot Embarkation/Disembarkation Language</li>
+  <li>Navigation Warning Interpretation</li>
+  <li>GMDSS Basic — Distress communication</li>
+  <li>Crew Management & Watch Handover Phrases</li>
+  <li>Chart Correction & NOTAM Language</li>
+</ul>
+<h4>Fasilitas Termasuk</h4>
+<ul>
+  <li>Akses platform RLS selama 2 bulan</li>
+  <li>Sertifikat kelulusan M.E.C</li>
+  <li>Marlins Test preparation materials</li>
+  <li>2× mock interview dengan crewing agent</li>
+</ul>` },
+  2: { icon:"⚙️", name:"The Engine Voice",
+    body:`<h4>Target Peserta</h4>
+Calon marine engineer, taruna pelayaran jurusan teknika, atau mekanik kapal yang ingin menguasai bahasa teknis mesin.
+<div class="modal-highlight"><strong>Outcome:</strong> Mampu menulis laporan teknis, berkomunikasi dengan Chief Engineer asing, dan lulus PSC inspection.</div>
+<h4>Modul Lengkap</h4>
+<ul>
+  <li>Engine Room Terminology — main engine, auxiliary systems</li>
+  <li>Planned Maintenance System (PMS) Language</li>
+  <li>Deficiency Report & Non-Conformity Writing</li>
+  <li>Engine Room-Bridge Communication Protocol</li>
+  <li>Bunker Operations & Oil Record Book English</li>
+  <li>MARPOL Compliance Language</li>
+  <li>Chief Engineer Log Entries</li>
+  <li>Spare Parts Requisition Writing</li>
+</ul>
+<h4>Fasilitas Termasuk</h4>
+<ul>
+  <li>Akses platform RLS selama 2 bulan</li>
+  <li>Technical writing templates collection</li>
+  <li>Engine room simulation audio materials</li>
+  <li>Sertifikat kelulusan M.E.C</li>
+</ul>` },
+  3: { icon:"🏨", name:"Hospitality Elite",
+    body:`<h4>Target Peserta</h4>
+Calon crew kapal pesiar, hotel officer, atau tenaga hospitality yang akan bekerja di kapal penumpang internasional.
+<div class="modal-highlight"><strong>Outcome:</strong> Mampu memberikan pelayanan prima dalam bahasa Inggris kepada penumpang dari berbagai negara.</div>
+<h4>Modul Lengkap</h4>
+<ul>
+  <li>Guest Service Excellence Language</li>
+  <li>Food & Beverage Service Communication</li>
+  <li>Housekeeping & Cabin Services English</li>
+  <li>Complaint Handling & Recovery Language</li>
+  <li>Shore Excursion Briefing Skills</li>
+  <li>Intercultural Communication — 10 budaya utama</li>
+  <li>Emergency Muster Station Communication</li>
+  <li>Telephone & Radio Communication in Hospitality</li>
+</ul>
+<h4>Fasilitas Termasuk</h4>
+<ul>
+  <li>Cruise company interview preparation</li>
+  <li>Akses video situational practice library</li>
+  <li>Sertifikat kelulusan M.E.C</li>
+  <li>Referral ke cruise line partners</li>
+</ul>` },
+  4: { icon:"🌐", name:"Full All-Round Mariner",
+    body:`<h4>Program Terlengkap M.E.C</h4>
+Program 6 bulan komprehensif yang menggabungkan semua aspek Maritime English dari bridge hingga hospitality, didukung teknologi AI terdepan.
+<div class="modal-highlight"><strong>Outcome:</strong> Siap bekerja di posisi apapun di atas kapal internasional — deck, engine, atau hospitality — dengan kemampuan bahasa kelas dunia.</div>
+<h4>Yang Didapat</h4>
+<ul>
+  <li>✅ Semua modul Bridge Watchkeeper</li>
+  <li>✅ Semua modul Engine Voice</li>
+  <li>✅ Semua modul Hospitality Elite</li>
+  <li>✅ Career Mastery Phase eksklusif</li>
+  <li>✅ Akses RLS AI Platform 6 bulan</li>
+  <li>✅ Marlins Test preparation & mock exam</li>
+  <li>✅ 5× mock interview dengan crewing agencies</li>
+  <li>✅ Job placement assistance</li>
+  <li>✅ 6 bulan akses komunitas alumni</li>
+  <li>✅ Sertifikat internasional M.E.C</li>
+</ul>
+<h4>Bonus Eksklusif</h4>
+<ul>
+  <li>E-book: 1000 Maritime English Phrases</li>
+  <li>Akses database lowongan maritim internasional</li>
+  <li>Lifetime update materi platform</li>
+</ul>` }
+};
+
+function openPkgModal(n) {
+  const d = pkgData[n];
+  document.getElementById('modalBody').innerHTML = `
+    <div class="modal-icon">${d.icon}</div>
+    <div class="modal-badge">Paket Pelatihan</div>
+    <div class="modal-title">${d.name}</div>
+    <div class="modal-body">${d.body}</div>
+    <a href="#kontak" class="modal-link" onclick="closeModal()">✉️ Daftar Sekarang</a>
+    <a href="#kontak" class="modal-link2" onclick="closeModal()">💬 Tanya via WhatsApp</a>`;
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+// ====== RPS MODAL DATA ======
+const rpsData = {
+  1:{icon:"📖",week:"Minggu 1–2",topic:"Maritime English Fundamentals",
+    body:`<h4>Topik Utama</h4>Pengenalan dan penguasaan kosakata dasar Maritime English yang mencakup seluruh aspek operasional kapal.
+<div class="modal-highlight"><strong>Indikator:</strong> Peserta mampu mengidentifikasi dan menggunakan 200+ kosakata teknis maritim dalam konteks yang tepat.</div>
+<h4>Subtopik</h4>
+<ul>
+  <li>Basic nautical vocabulary — parts of ship, sea terminology</li>
+  <li>STCW-related terms & definitions</li>
+  <li>Phonetic alphabet (NATO) — alpha, bravo, charlie...</li>
+  <li>Numbers, times, and positions in Maritime English</li>
+  <li>Flag state & classification society terminology</li>
+</ul>
+<h4>Metode</h4>
+<ul>
+  <li>Blended learning (tatap muka + RLS platform)</li>
+  <li>AI flashcard drilling system</li>
+  <li>Gamified vocabulary quiz</li>
+</ul>`},
+  2:{icon:"🧭",week:"Minggu 3–4",topic:"Bridge Communication",
+    body:`<h4>Topik Utama</h4>Komunikasi resmi di anjungan kapal mengikuti prosedur IMO SMCP (Standard Marine Communication Phrases).
+<div class="modal-highlight"><strong>Indikator:</strong> Peserta dapat melakukan simulasi komunikasi bridge-to-bridge dan bridge-to-VTS dengan lancar.</div>
+<h4>Subtopik</h4>
+<ul>
+  <li>COLREGS verbal reporting procedures</li>
+  <li>VHF Radio procedure — Channel 16, 12, 14, 67</li>
+  <li>Vessel Traffic Service (VTS) communication</li>
+  <li>Pilot boarding/disembarkation language</li>
+  <li>Anchor & mooring communication phrases</li>
+</ul>
+<h4>Evaluasi</h4>
+<ul>
+  <li>Simulasi komunikasi bridge menggunakan VHF radio replica</li>
+  <li>Role play: Master, OOW, Pilot, VTS operator</li>
+</ul>`},
+  3:{icon:"⚙️",week:"Minggu 5–6",topic:"Engine Room Language",
+    body:`<h4>Topik Utama</h4>Bahasa teknis ruang mesin untuk operasi harian, perawatan, dan pelaporan kondisi mesin.
+<div class="modal-highlight"><strong>Indikator:</strong> Peserta mampu membuat laporan teknis tertulis dan berkomunikasi dengan Chief Engineer berbahasa Inggris.</div>
+<h4>Subtopik</h4>
+<ul>
+  <li>Main engine & auxiliary systems terminology</li>
+  <li>Planned Maintenance System (PMS) language</li>
+  <li>Deficiency report & non-conformity writing</li>
+  <li>Bunker report terminology</li>
+  <li>MARPOL compliance communication</li>
+</ul>
+<h4>Workshop</h4>
+<ul>
+  <li>Technical report writing workshop (3 sesi)</li>
+  <li>Engine log book filling exercise</li>
+  <li>Spare parts requisition writing</li>
+</ul>`},
+  4:{icon:"🆘",week:"Minggu 7–8",topic:"GMDSS & Safety Communication",
+    body:`<h4>Topik Utama</h4>Prosedur komunikasi darurat dan keselamatan menggunakan sistem GMDSS sesuai SOLAS Chapter IV.
+<div class="modal-highlight"><strong>Indikator:</strong> Peserta dapat melakukan role-play prosedur darurat Mayday secara penuh dan benar.</div>
+<h4>Subtopik</h4>
+<ul>
+  <li>Mayday call — structure & procedures</li>
+  <li>Pan-Pan & Sécurité messages</li>
+  <li>SAR (Search and Rescue) coordination language</li>
+  <li>EPIRB & SART activation procedures language</li>
+  <li>Man Overboard (MOB) communication</li>
+  <li>Fire & flooding emergency communication</li>
+</ul>
+<h4>Drill</h4>
+<ul>
+  <li>Full emergency scenario role-play (4 skenario)</li>
+  <li>GMDSS distress call recording & playback analysis</li>
+</ul>`},
+  5:{icon:"🏭",week:"Minggu 9–10",topic:"Port State Control English",
+    body:`<h4>Topik Utama</h4>Bahasa untuk menghadapi pemeriksaan Port State Control (PSC) dan survei kelas kapal.
+<div class="modal-highlight"><strong>Indikator:</strong> Peserta mampu menjawab pertanyaan PSC Officer dengan tenang dan akurat dalam bahasa Inggris.</div>
+<h4>Subtopik</h4>
+<ul>
+  <li>PSC inspection procedure language</li>
+  <li>Certificate & document terminology</li>
+  <li>Responding to PSC deficiency questions</li>
+  <li>ISPS Code communication</li>
+  <li>Flag state surveyors interaction language</li>
+</ul>
+<h4>Mock Drill</h4>
+<ul>
+  <li>Simulated PSC inspection (instruktur berperan sebagai PSC Officer)</li>
+  <li>Document presentation practice</li>
+</ul>`},
+  6:{icon:"📦",week:"Minggu 11–12",topic:"Cargo Operations Language",
+    body:`<h4>Topik Utama</h4>Bahasa operasional kargo mulai dari pemuatan hingga dokumentasi commercial shipping.
+<div class="modal-highlight"><strong>Indikator:</strong> Peserta mampu membuat cargo manifest dan berkomunikasi dengan terminal operator dalam bahasa Inggris.</div>
+<h4>Subtopik</h4>
+<ul>
+  <li>Cargo handling & stowage instructions</li>
+  <li>Bill of Lading terminology & preparation</li>
+  <li>Dangerous goods (IMDG) language</li>
+  <li>Reefer cargo procedures</li>
+  <li>Cargo survey & damage report writing</li>
+  <li>Notice of Readiness (NOR) language</li>
+</ul>`},
+  7:{icon:"🏥",week:"Minggu 13–14",topic:"Medical English at Sea",
+    body:`<h4>Topik Utama</h4>Komunikasi medis darurat di laut menggunakan MFAG dan prosedur telemedicine maritim.
+<div class="modal-highlight"><strong>Indikator:</strong> Peserta mampu berkomunikasi dengan dokter darat via radio untuk penanganan darurat medis.</div>
+<h4>Subtopik</h4>
+<ul>
+  <li>Medical terminology for seafarers</li>
+  <li>MFAG (Medical First Aid Guide) communication</li>
+  <li>Telemedicine procedures via radio/satellite</li>
+  <li>Casualty report writing</li>
+  <li>Medevac coordination language</li>
+  <li>Medical stores inventory language</li>
+</ul>`},
+  8:{icon:"🏆",week:"Minggu 15–16",topic:"Job Interview Preparation",
+    body:`<h4>Topik Utama</h4>Persiapan komprehensif untuk memasuki pasar kerja maritim internasional melalui crewing agencies.
+<div class="modal-highlight"><strong>Indikator:</strong> Peserta lolos seleksi minimal 1 crewing agency internasional dalam 3 bulan pasca-lulus.</div>
+<h4>Subtopik</h4>
+<ul>
+  <li>Maritime CV & resume writing</li>
+  <li>Cover letter untuk crewing agencies</li>
+  <li>Mock interview: technical & personal questions</li>
+  <li>Marlins Test simulation exam</li>
+  <li>STCW certificate explanation language</li>
+  <li>Negotiation & contract understanding</li>
+</ul>
+<h4>Layanan Tambahan</h4>
+<ul>
+  <li>Referral letter dari M.E.C untuk crewing agencies partner</li>
+  <li>CV review oleh crewing officer berpengalaman</li>
+  <li>Database crewing agencies internasional</li>
+</ul>`}
+};
+
+function openRpsModal(n) {
+  const d = rpsData[n];
+  document.getElementById('modalBody').innerHTML = `
+    <div class="modal-icon">${d.icon}</div>
+    <div class="modal-badge">RPS — ${d.week}</div>
+    <div class="modal-title">${d.topic}</div>
+    <div class="modal-body">${d.body}</div>`;
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+// ====== RLS MODAL DATA ======
+const rlsData = {
+  1:{icon:"🎙️",name:"Voice Recognition Engine",
+    body:`<h4>Tentang Teknologi</h4>
+Sistem pengenalan suara berbasis AI yang menganalisis pengucapan maritime phraseology secara real-time dengan tingkat akurasi tinggi.
+<div class="modal-highlight"><strong>Teknologi:</strong> Deep learning speech model yang dilatih khusus dengan dataset Maritime English dari 15 negara.</div>
+<h4>Kemampuan Sistem</h4>
+<ul>
+  <li>Analisis intonasi & stress pattern IMO SMCP</li>
+  <li>Deteksi kesalahan pengucapan kosakata teknis</li>
+  <li>Feedback real-time dalam 0.5 detik</li>
+  <li>Perbandingan dengan native maritime speaker benchmark</li>
+  <li>Tracking progres pengucapan per minggu</li>
+</ul>
+<h4>Hasil yang Terukur</h4>
+<ul>
+  <li>Skor pronounciation accuracy (0–100%)</li>
+  <li>Clarity index untuk komunikasi radio</li>
+  <li>Rekomendasi drill otomatis berbasis kelemahan</li>
+</ul>`},
+  2:{icon:"📊",name:"Skill Progress Dashboard",
+    body:`<h4>Tentang Fitur</h4>
+Dashboard personal yang menampilkan progres belajar secara visual dan terukur dalam 6 dimensi kompetensi Maritime English.
+<div class="modal-highlight"><strong>Akses:</strong> Web & mobile app — data ter-sync real-time antara sesi tatap muka dan belajar mandiri.</div>
+<h4>Fitur Dashboard</h4>
+<ul>
+  <li>Radar chart: 6 kompetensi (Vocabulary, Speaking, Listening, Writing, Reading, Communication)</li>
+  <li>Heatmap aktivitas belajar harian</li>
+  <li>Progress bar per modul & unit</li>
+  <li>Leaderboard kelas (opsional)</li>
+  <li>Streak counter & achievement badges</li>
+  <li>Prediksi kesiapan Marlins Test</li>
+</ul>
+<h4>Laporan Berkala</h4>
+<ul>
+  <li>Weekly progress report (otomatis via email/WA)</li>
+  <li>Monthly performance summary</li>
+  <li>End-of-program certificate of competency</li>
+</ul>`},
+  3:{icon:"🧠",name:"AI Feedback System",
+    body:`<h4>Tentang Sistem</h4>
+Engine AI yang memberikan umpan balik instan, kontekstual, dan personal untuk setiap latihan bahasa yang dilakukan peserta.
+<div class="modal-highlight"><strong>Model:</strong> Large Language Model yang di-finetune dengan 50,000+ maritime communication examples.</div>
+<h4>Jenis Feedback</h4>
+<ul>
+  <li>Grammar correction dengan penjelasan kontekstual</li>
+  <li>Paraphrase suggestions untuk komunikasi lebih alami</li>
+  <li>Register check — formal vs informal maritime context</li>
+  <li>Cultural communication tips (multi-nationality crew)</li>
+  <li>Danger phrase detection — kata-kata yang berpotensi ambigu di laut</li>
+</ul>
+<h4>Interaction Modes</h4>
+<ul>
+  <li>Chat practice dengan AI maritime officer</li>
+  <li>Writing assistant untuk laporan teknis</li>
+  <li>Conversation simulation — PSC, VTS, crewing interview</li>
+</ul>`},
+  4:{icon:"🔄",name:"Adaptive Learning Engine",
+    body:`<h4>Tentang Sistem</h4>
+Algoritma machine learning yang secara otomatis menyesuaikan kurikulum, tingkat kesulitan, dan urutan materi berdasarkan performa individu.
+<div class="modal-highlight"><strong>Prinsip:</strong> Tidak ada dua siswa yang mendapat pengalaman belajar yang identik — semua dipersonalisasi.</div>
+<h4>Cara Kerja</h4>
+<ul>
+  <li>Analisis response time & accuracy setiap latihan</li>
+  <li>Identifikasi knowledge gaps secara otomatis</li>
+  <li>Penambahan review otomatis untuk materi lemah</li>
+  <li>Spaced repetition algorithm untuk retensi jangka panjang</li>
+  <li>Difficulty scaling — otomatis naik/turun level</li>
+</ul>
+<h4>Personalisasi</h4>
+<ul>
+  <li>Learning style detection (visual/auditory/kinesthetic)</li>
+  <li>Optimal study session timing recommendation</li>
+  <li>Focus area suggestion berdasarkan target posisi kapal</li>
+  <li>Peer-matching untuk group practice sessions</li>
+</ul>`}
+};
+
+function openRlsModal(n) {
+  const d = rlsData[n];
+  document.getElementById('modalBody').innerHTML = `
+    <div class="modal-icon">${d.icon}</div>
+    <div class="modal-badge">RLS Technology</div>
+    <div class="modal-title">${d.name}</div>
+    <div class="modal-body">${d.body}</div>`;
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+// ====== REFERENCE MODAL DATA ======
+const refData = {
+  imo:{icon:"🌐",name:"IMO Model Course 3.17",
+    body:`<h4>Tentang IMO</h4>
+International Maritime Organization (IMO) adalah badan PBB yang mengatur standar keselamatan dan keamanan maritim global. Model Course 3.17 adalah standar kurikulum resmi untuk Maritime English.
+<div class="modal-highlight"><strong>Relevansi M.E.C:</strong> Seluruh kurikulum M.E.C mengacu pada IMO Model Course 3.17 sebagai backbone materi ajar.</div>
+<h4>Keunggulan Referensi Ini</h4>
+<ul>
+  <li>Standar bahasa maritim yang diakui 176 negara anggota</li>
+  <li>Mencakup SMCP (Standard Marine Communication Phrases)</li>
+  <li>Basis untuk semua sertifikasi maritim internasional</li>
+  <li>Update reguler sesuai perkembangan industri maritim</li>
+</ul>`,
+    link:"https://www.imo.org",linkText:"🌐 Kunjungi IMO.org"},
+  marlins:{icon:"🇬🇧",name:"Marlins Test",
+    body:`<h4>Tentang Marlins</h4>
+Marlins adalah organisasi Inggris yang menyediakan tes bahasa Inggris maritim yang diakui oleh ratusan perusahaan pelayaran dan crewing agencies di seluruh dunia.
+<div class="modal-highlight"><strong>Relevansi M.E.C:</strong> M.E.C mempersiapkan peserta untuk mencapai Marlins Score minimal 75 — standar yang diterima oleh mayoritas perusahaan pelayaran internasional.</div>
+<h4>Keunggulan</h4>
+<ul>
+  <li>Diakui oleh 2,000+ shipping companies worldwide</li>
+  <li>Standar assessment untuk recruitment seafarers</li>
+  <li>Online test dengan immediate results</li>
+  <li>Skor Marlins sering diminta oleh crewing agencies Jepang, Eropa, dan Amerika</li>
+</ul>`,
+    link:"https://www.marlins.co.uk",linkText:"🌐 Kunjungi Marlins.co.uk"},
+  stcgroup:{icon:"🇳🇱",name:"STC Group Rotterdam",
+    body:`<h4>Tentang STC Group</h4>
+STC (Shipping and Transport College) Group adalah lembaga pendidikan maritim terkemuka di Rotterdam, Belanda — salah satu pusat maritim terbesar di dunia.
+<div class="modal-highlight"><strong>Relevansi M.E.C:</strong> M.E.C mengadopsi pendekatan competency-based learning dan practical simulation yang dikembangkan STC Group.</div>
+<h4>Keunggulan</h4>
+<ul>
+  <li>Pusat maritim Rotterdam — hub terbesar Eropa</li>
+  <li>Simulator-based training methodology</li>
+  <li>E-learning maritime content standard</li>
+  <li>Kerjasama dengan 500+ shipping companies global</li>
+</ul>`,
+    link:"https://www.stcgroup.nl",linkText:"🌐 Kunjungi STC Group"},
+  warsash:{icon:"🇬🇧",name:"Warsash Maritime School",
+    body:`<h4>Tentang Warsash</h4>
+Warsash Maritime School, bagian dari Southampton Solent University (UK), adalah salah satu sekolah maritim paling bergengsi di dunia dengan reputasi riset dan pelatihan kelas satu.
+<div class="modal-highlight"><strong>Relevansi M.E.C:</strong> M.E.C menggunakan materials dan metodologi pengajaran Maritime English yang mengacu pada standar akademik Warsash.</div>
+<h4>Keunggulan</h4>
+<ul>
+  <li>100+ tahun tradisi pendidikan maritim Inggris</li>
+  <li>World-class bridge & engine simulators</li>
+  <li>Riset mendalam tentang human factors in shipping</li>
+  <li>Kemitraan global dengan major shipping companies</li>
+</ul>`,
+    link:"https://www.solent.ac.uk/warsash",linkText:"🌐 Kunjungi Warsash"},
+  marilang:{icon:"🇪🇺",name:"MariLANG Project",
+    body:`<h4>Tentang MariLANG</h4>
+MariLANG adalah proyek EU yang mengembangkan standar pengajaran bahasa maritim di Eropa, menghasilkan framework kompetensi dan modul ajar yang digunakan di 12 negara EU.
+<div class="modal-highlight"><strong>Relevansi M.E.C:</strong> Pendekatan komunikatif dan task-based learning M.E.C terinspirasi dari metodologi MariLANG Project.</div>
+<h4>Keunggulan</h4>
+<ul>
+  <li>Framework kompetensi Maritime English berbasis CEFR</li>
+  <li>Modul ajar multi-modal (audio, video, simulation)</li>
+  <li>Assessment tools yang terstandarisasi</li>
+  <li>Research-based approach untuk maritime language training</li>
+</ul>`,
+    link:"https://www.marilang.eu",linkText:"🌐 Kunjungi MariLANG"},
+  pip:{icon:"🇮🇩",name:"PIP Semarang",
+    body:`<h4>Tentang PIP Semarang</h4>
+Politeknik Ilmu Pelayaran (PIP) Semarang adalah perguruan tinggi negeri di bawah Kementerian Perhubungan RI, salah satu institusi pelayaran terbaik di Indonesia.
+<div class="modal-highlight"><strong>Relevansi M.E.C:</strong> M.E.C berkomplementer dengan PIP Semarang — M.E.C fokus pada soft skill bahasa yang menjadi penunjang kompetensi teknis lulusan PIP.</div>
+<h4>Keunggulan</h4>
+<ul>
+  <li>Institusi negeri di bawah Kemenhub RI</li>
+  <li>Program D4 & D3 Nautika, Teknika, Ketatalaksanaan</li>
+  <li>Simulator terlengkap di Indonesia</li>
+  <li>Banyak alumni di kapal internasional</li>
+</ul>`,
+    link:"https://www.pip-semarang.ac.id",linkText:"🌐 Kunjungi PIP Semarang"},
+  polimarin:{icon:"🇮🇩",name:"Polimarin",
+    body:`<h4>Tentang Polimarin</h4>
+Politeknik Maritim Negeri Indonesia (Polimarin) Semarang adalah politeknik maritim negeri yang berfokus pada pembinaan SDM maritim profesional Indonesia.
+<div class="modal-highlight"><strong>Relevansi M.E.C:</strong> M.E.C dan Polimarin saling melengkapi — kemampuan bahasa dari M.E.C membantu alumni Polimarin bersaing di pasar internasional.</div>
+<h4>Keunggulan</h4>
+<ul>
+  <li>Satu-satunya politeknik maritim negeri mandiri di Indonesia</li>
+  <li>Program studi: Nautika, Teknika, Transportasi Laut</li>
+  <li>Kerjasama dengan BKI, Pelindo, dan PT PAL</li>
+  <li>MoU dengan institusi maritim Jepang & Korea</li>
+</ul>`,
+    link:"https://www.polimarin.ac.id",linkText:"🌐 Kunjungi Polimarin"},
+  bp3ip:{icon:"🇮🇩",name:"BP3IP Jakarta",
+    body:`<h4>Tentang BP3IP Jakarta</h4>
+Balai Pendidikan dan Pelatihan Ilmu Pelayaran (BP3IP) Jakarta adalah lembaga diklat maritim di bawah Kemenhub RI yang menyelenggarakan kursus STCW dan sertifikasi pelaut.
+<div class="modal-highlight"><strong>Relevansi M.E.C:</strong> M.E.C mempersiapkan peserta untuk lulus ujian bahasa dalam sertifikasi STCW di BP3IP dengan lebih mudah dan percaya diri.</div>
+<h4>Keunggulan</h4>
+<ul>
+  <li>Penyelenggara resmi diklat STCW di Indonesia</li>
+  <li>Basic Safety Training (BST), GMDSS, dan sertifikasi lanjut</li>
+  <li>Diakui oleh IMO dan flag states internasional</li>
+  <li>Berlokasi strategis di Jakarta Utara, dekat Pelabuhan Tanjung Priok</li>
+</ul>`,
+    link:"https://www.bp3ipjakarta.ac.id",linkText:"🌐 Kunjungi BP3IP Jakarta"},
+  stip:{icon:"🇮🇩",name:"STIP Jakarta",
+    body:`<h4>Tentang STIP Jakarta</h4>
+Sekolah Tinggi Ilmu Pelayaran (STIP) Jakarta adalah perguruan tinggi pelayaran tertua dan terbesar di Indonesia, menghasilkan ribuan perwira kapal setiap tahunnya.
+<div class="modal-highlight"><strong>Relevansi M.E.C:</strong> Banyak taruna dan alumni STIP menggunakan M.E.C untuk mempersiapkan diri menghadapi wawancara crewing agency internasional.</div>
+<h4>Keunggulan</h4>
+<ul>
+  <li>Kampus maritim terbesar di Indonesia (Marunda, Jakarta)</li>
+  <li>Program D4 Nautika & Teknika berstandar internasional</li>
+  <li>Simulator canggih: Full Mission Bridge & Engine Room</li>
+  <li>Jaringan alumni di ratusan perusahaan pelayaran global</li>
+</ul>`,
+    link:"https://www.stipjakarta.ac.id",linkText:"🌐 Kunjungi STIP Jakarta"}
+};
+
+function openRefModal(key) {
+  const d = refData[key];
+  document.getElementById('modalBody').innerHTML = `
+    <div class="modal-icon">${d.icon}</div>
+    <div class="modal-badge">Referensi Institusi</div>
+    <div class="modal-title">${d.name}</div>
+    <div class="modal-body">${d.body}</div>
+    <a href="${d.link}" target="_blank" rel="noopener" class="modal-link">${d.linkText}</a>`;
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+// ====== MODAL CLOSE ======
+function closeModal(e) {
+  if (!e || e.target === document.getElementById('modalOverlay')) {
+    document.getElementById('modalOverlay').classList.remove('open');
+  }
+}
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal({target:document.getElementById('modalOverlay')}); });
+
+// ====== REF TABS ======
+function switchRefTab(tab, el) {
+  document.getElementById('ref-intl').style.display = tab==='intl' ? 'grid' : 'none';
+  document.getElementById('ref-indo').style.display = tab==='indo' ? 'grid' : 'none';
+  document.querySelectorAll('.ref-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ====== MOBILE MENU ======
+function toggleMobile() {
+  document.getElementById('mobileMenu').classList.toggle('open');
+}
+
+// ====== SCROLL ANIMATIONS ======
+function initScrollAnim() {
+  const els = document.querySelectorAll('.fade-up');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.12 });
+  els.forEach(el => observer.observe(el));
+}
+
+// ====== ACTIVE NAV ======
+function initActiveNav() {
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('nav ul li a');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if(e.isIntersecting) {
+        navLinks.forEach(a => {
+          a.classList.remove('active');
+          if(a.getAttribute('href') === '#'+e.target.id) a.classList.add('active');
+        });
+      }
+    });
+  }, { threshold: 0.35 });
+  sections.forEach(s => observer.observe(s));
+}
+
+// ====== INIT ======
+document.addEventListener('DOMContentLoaded', () => {
+  buildAccordion();
+  initScrollAnim();
+  initActiveNav();
+});
+</script>
+</body>
+</html>
